@@ -1,13 +1,12 @@
-from django.contrib.auth.models import Group
-from rooms.models import Room
+from rooms.models import Room, Post
 from rest_framework import serializers
  
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
 	class Meta:
-		model = Group
-		fields = ['url', 'name']
+		model = Post
+		fields = '__all__'
   
-class RoomSerializer(serializers.HyperlinkedModelSerializer):
+class RoomSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Room
 		fields = '__all__'

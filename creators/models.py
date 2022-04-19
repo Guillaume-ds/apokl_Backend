@@ -12,6 +12,10 @@ class Creator(models.Model):
     twitterUrl = models.CharField(max_length=500,default='')
     youtubeUrl = models.CharField(max_length=500,default='')
     discordUrl = models.CharField(max_length=500,default='')
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['-id']
        
 
 class Collection(models.Model):
@@ -22,8 +26,9 @@ class Collection(models.Model):
     tags = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     nfts = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     picture = models.ImageField(upload_to=f'photos/collection/{name}_{slug}', default='', max_length=1000)
-
     def __str__(self):
         return self.name
+    class Meta:
+        ordering = ['-id']
     
      

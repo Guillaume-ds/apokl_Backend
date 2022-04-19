@@ -7,10 +7,9 @@ import accounts.views
 import nfts.views
 import creators.views
 
+
 router = routers.DefaultRouter()
 router.register(r'users', accounts.views.UserViewSet)
-router.register(r'groups', rooms.views.GroupViewSet)
-router.register(r'rooms', rooms.views.RoomViewSet)
 router.register(r'nfts', nfts.views.NFTViewSet)
 
 
@@ -26,4 +25,5 @@ urlpatterns = [
     path('api/change-password/', accounts.views.ChangePasswordView.as_view(), name='change-password'),
     path('api/reset-password/', accounts.views.ResetPasswordView.as_view(), name='change-password'),
     path('api/creators/', include('creators.urls', namespace='creators')),
+    path('api/rooms/', include('rooms.urls', namespace='rooms')),
 ]

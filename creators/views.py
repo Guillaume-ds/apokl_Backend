@@ -71,9 +71,9 @@ class GetCollectionView(ListAPIView):
   serializer_class = GetCollectionSerializer
   lookup_field = 'creator'
   def get_queryset(self):
-        name = self.kwargs['name']
-        slug = self.kwargs['slug']
-        return Collection.objects.filter(creator=name).filter(slug=slug)
+      name = self.kwargs['name']
+      slug = self.kwargs['slug']
+      return Collection.objects.filter(creator=name).filter(slug=slug)
       
 class CreateCollectionView(APIView):
   queryset = Collection.objects.all()
@@ -84,14 +84,12 @@ class CreateCollectionView(APIView):
     user = self.request.user
     if request.data['name'] not in ["activate","create-collection"]: 
       request.data['creator'] = user.username   
-      listIds=request.data['nfts']
-      request.data['nfts']=list(set(listIds))
       serializer = CreateCollectionSerializer(data=request.data) 
       if serializer.is_valid():
           serializer.save()
           return Response(serializer.data, status=status.HTTP_200_OK)
       else:
-          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+          return Response({"error":"wtong data"}, status=status.HTTP_400_BAD_REQUEST)
     else: 
        return Response({"error":"unauthorized username"}, status=status.HTTP_400_BAD_REQUEST)
   
