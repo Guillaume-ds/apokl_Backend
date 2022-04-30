@@ -4,7 +4,7 @@ from rest_framework import serializers
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = User
-		fields = ['url', 'username', 'email', 'groups','id','date_joined']
+		fields = ['url', 'username', 'email', 'id','date_joined']
 
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
 	def create(self, validated_data):

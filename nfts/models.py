@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from creators.models import Creator
 from django.utils.timezone import now
   
 class NFT(models.Model):    
@@ -12,7 +12,7 @@ class NFT(models.Model):
     Polygon = 'Polygon'
     Other = 'Other'
 
-  creator = models.CharField(max_length=500,default='Artiste Anonyme')
+  creator = models.ForeignKey(Creator, related_name="nfts", on_delete=models.CASCADE)
   slug = models.CharField(max_length=200, unique=True)
   title = models.CharField(max_length=150)   
   description = models.TextField(blank=True)
@@ -20,6 +20,7 @@ class NFT(models.Model):
   blockchain = models.CharField(max_length=50, choices=Blockchain.choices, default=Blockchain.Polygon)
   price = models.IntegerField(default=1)
   rarity = models.IntegerField(default=1)    
+  tokenId = models.IntegerField(default=1)   
   is_published = models.BooleanField(default=True)
   create_at = models.DateTimeField(default=now, blank=True)
 

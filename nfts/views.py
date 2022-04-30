@@ -9,7 +9,7 @@ from nfts.models import NFT
 class NFTView(RetrieveAPIView):
   queryset = NFT.objects.order_by('-create_at')
   serializer_class = NFTDetailSerializer
-  lookup_field = 'slug'
+  lookup_field = 'tokenId'
 
 class NFTViewSet(viewsets.ModelViewSet):
     queryset = NFT.objects.all()

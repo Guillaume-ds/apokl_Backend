@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.postgres',    
+    'django.contrib.postgres', 
+       
     'corsheaders',
     'django_filters',
     'rest_framework',
-    'storages',    
+    'storages',
+        
     'accounts',
     'creators',
     'rooms',

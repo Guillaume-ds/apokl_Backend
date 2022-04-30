@@ -1,11 +1,14 @@
 from django.contrib.auth.models import Group
+from creators.models import Creator
 from nfts.models import NFT
+from creators.serializers import GetCreatorNameSerializer
 from rest_framework import serializers
 
 class NFTDetailSerializer(serializers.ModelSerializer):
+    creator =  GetCreatorNameSerializer()
     class Meta:
         model = NFT
-        fields = '__all__'
+        fields = ["tokenId","title","is_published","creator","description","create_at","rarity"]
         lookup_field = 'slug'
 
 class NFTReadSerializer(serializers.ModelSerializer):
