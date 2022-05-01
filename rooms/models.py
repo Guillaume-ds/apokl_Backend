@@ -17,6 +17,8 @@ class Room(models.Model):
   picture = models.ImageField(upload_to=room_directory_path, default='', max_length=2000, blank=True)
   def __str__(self):
     return self.title
+  class Meta:
+        ordering = ['-id']
 	
 def post_directory_path(instance, filename):
     return f'photos/room/{instance.creator.name}/{filename}'.format(filename=filename) 
@@ -30,3 +32,5 @@ class Post(models.Model):
   picture2 = models.ImageField(upload_to=post_directory_path, default='', max_length=2000, blank=True)
   def __str__(self):
     return self.title
+  class Meta:
+        ordering = ['-id']

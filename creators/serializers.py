@@ -36,7 +36,7 @@ class GetCreatorsSerializer(serializers.ModelSerializer):
         return posts
     
 #3 view -> Retrieve specific Creator with complete data, only if user = creator 
-class GetCreatorSerializer(serializers.ModelSerializer):
+class GetCreatorDetailsSerializer(serializers.ModelSerializer):
     collections = serializers.SlugRelatedField(many=True, read_only=True,slug_field='slug')
     nfts = serializers.SlugRelatedField(many=True, read_only=True,slug_field='tokenId')
     rooms = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
@@ -48,25 +48,43 @@ class GetCreatorSerializer(serializers.ModelSerializer):
 
 class GetCreatorNameSerializer(serializers.ModelSerializer):       
     class Meta:
-        fields = ['name']
+        fields = ['name','picture']
         model = Creator
         depth=1
 
 
 """--------------------------Collections---------------------------"""
-
-
-
-
-
-
-
+#1 view -> allow to create a Creator + #3 view : update
 class CreateCollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = '__all__'        
-        
-class GetCollectionSerializer(serializers.ModelSerializer):
+        fields = '__all__'  
+              
+#2 view -> Retrieve all Collection with partial data  
+class GetCollectionsSerializer(serializers.ModelSerializer):
+    roomsCount = serializers.SerializerMethodField('countRooms')
+    postsCount = serializers.SerializerMethodField('countPosts')
+    creator = GetCreatorNameSerializer()
+    class Meta:
+        fields = ['id','name',
+                  'creator',
+                  'description',
+                  'tags','picture',
+                  'nfts_array','roomsCount','postsCount']
+        model = Collection
+        lookup_field = 'creator'
+    
+    def countRooms(self,Collection):
+        rooms = Room.objects.filter(collection=Collection.id).count()
+        return rooms 
+    
+    def countPosts(self,Collection):
+        posts = Post.objects.filter(creator=Collection.id).count()
+        return posts
+ 
+ 
+#3 view -> Retrieve all Collection with complete data        
+class GetCollectionDetailsSerializer(serializers.ModelSerializer):
     rooms = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:

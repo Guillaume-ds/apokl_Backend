@@ -1,6 +1,5 @@
-from venv import create
 from .models import Creator, Collection
-from .serializers import CreateCreatorSerializer,GetCreatorsSerializer,GetCreatorSerializer,CreateCollectionSerializer,GetCollectionSerializer
+from .serializers import CreateCreatorSerializer,GetCreatorsSerializer,GetCreatorDetailsSerializer,CreateCollectionSerializer,GetCollectionsSerializer,GetCollectionDetailsSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
@@ -22,10 +21,14 @@ class CreatorViewSet(viewsets.ModelViewSet):
 
 #2 view -> Retrieve all Creator with partial data 
 class SearchCreator(ListAPIView):  
-  serializer_class = GetCreatorsSerializer        
+  serializer_class = GetCreatorsSerializer   
+  
+  def get(self,request):
+    return Response({"error":"Wrong request"}, status=status.HTTP_400_BAD_REQUEST)
+       
   def post(self, request, format=None):
     paginator = PageNumberPagination()
-    paginator.page_size = 10
+    paginator.page_size = 50
     
     queryset= Creator.objects.all()
     try:
@@ -39,19 +42,19 @@ class SearchCreator(ListAPIView):
     except: None
     
     result_page = paginator.paginate_queryset(queryset, request)
-    serializer = GetCreatorSerializer(queryset, many=True)
+    serializer = GetCreatorsSerializer(queryset, many=True)
     return paginator.get_paginated_response(serializer.data)
   
 #3 view -> Retrieve specific Creator with complete data, only if user = creator  
-class GetCreatorView(ListAPIView):
+class GetCreatorDetailsView(ListAPIView):
   permission_classes = (permissions.IsAuthenticated, )
-  serializer_class = GetCreatorSerializer
+  serializer_class = GetCreatorDetailsSerializer
   
   def post(self,request):
     user = self.request.user
     try:
       creator = Creator.objects.get(user=user)
-      serializer = GetCreatorSerializer(creator)
+      serializer = GetCreatorDetailsSerializer(creator)
       return Response(serializer.data, status = status.HTTP_200_OK)
     except:
       return Response({"error":"No creator"},status=status.HTTP_400_BAD_REQUEST)   
@@ -67,7 +70,7 @@ class UpdateCreatorView(APIView):
     serializer = CreateCreatorSerializer(creator, data=request.data)    
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status = status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
 
@@ -88,44 +91,15 @@ class CollectionViewSet(viewsets.ModelViewSet):
           except:
             return Response({"error":"Error occured, impossible to create this collection"},status=status.HTTP_400_BAD_REQUEST)
         else:
-            return GetCollectionSerializer 
-  
-  
-class CollectionsView(ListAPIView):
-  serializer_class = GetCollectionSerializer
-  lookup_field = 'creator'  
-  def get_queryset(self):
-    name = self.kwargs['name']
-    creator = Creator.objects.filter(name=name)
-    return Collection.objects.filter(creator=creator)
-      
-class GetCollectionView(ListAPIView):
-  serializer_class = GetCollectionSerializer
-  lookup_field = 'creator'
-  def get_queryset(self):
-      name = self.kwargs['name']
-      slug = self.kwargs['slug']
-      return Collection.objects.filter(creator=name).filter(slug=slug)
-      
-class UpdateCollectionView(APIView):
-  queryset = Collection.objects.all()
-  permission_classes = (permissions.IsAuthenticated, )  
-  serializer_class = CreateCollectionSerializer
-          
-  def put(self, request, format=None):   
-    user = self.request.user
-    creator = Creator.objects.get(user=user) 
-    collection = Collection.objects.get(slug=request.data['slug']) 
-    if collection.creator == creator:
-      serializer = CreateCollectionSerializer(collection, data=request.data)    
-      if serializer.is_valid():
-          serializer.save()
-          return Response(serializer.data)
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response({"error":"user not allowed to modify this collection"}, status=status.HTTP_400_BAD_REQUEST)
-      
+            return GetCollectionsSerializer 
+
+#2 view -> Retrieve all Collection with search fields 
 class SearchCollection(ListAPIView):  
-  serializer_class = GetCollectionSerializer        
+  serializer_class = GetCollectionsSerializer   
+  
+  def get(self,request):
+    return Response({"error":"Wrong request"}, status=status.HTTP_400_BAD_REQUEST) 
+      
   def post(self, request, format=None):
     paginator = PageNumberPagination()
     paginator.page_size = 10
@@ -154,8 +128,47 @@ class SearchCollection(ListAPIView):
     except: None 
     
     result_page = paginator.paginate_queryset(queryset, request)
-    serializer = GetCollectionSerializer(queryset, many=True)
+    serializer = GetCollectionsSerializer(queryset, many=True)
     return paginator.get_paginated_response(serializer.data)
+
+#3 view -> Retrieve specific Creator with complete data, only if user = creator 
+class GetCollectionDetailsView(ListAPIView):
+  permission_classes = (permissions.IsAuthenticated, )
+  serializer_class = GetCollectionDetailsSerializer
+  
+  def post(self,request):
+    user = self.request.user
+    creator = Creator.objects.get(user=user)
+    try:
+      collection = Collection.objects.filter(creator=creator)
+      serializer = GetCollectionDetailsSerializer(collection,many=True)
+      return Response(serializer.data, status = status.HTTP_200_OK)
+    except:
+      return Response({"error":"No creator"},status=status.HTTP_400_BAD_REQUEST) 
+
+#4 view -> Update Collection data
+class UpdateCollectionView(APIView):
+  queryset = Collection.objects.all()
+  permission_classes = (permissions.IsAuthenticated, )  
+  serializer_class = CreateCollectionSerializer
+          
+  def put(self, request, format=None):   
+    user = self.request.user
+    creator = Creator.objects.get(user=user) 
+    collection = Collection.objects.get(slug=request.data['slug']) 
+    if collection.creator == creator:
+      serializer = CreateCollectionSerializer(collection, data=request.data)    
+      if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"error":"user not allowed to modify this collection"}, status=status.HTTP_400_BAD_REQUEST)
+     
+
+      
+
+      
+
   
 
 

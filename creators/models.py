@@ -15,6 +15,7 @@ class Creator(models.Model):
     twitterUrl = models.CharField(max_length=500,default='', blank=True)
     youtubeUrl = models.CharField(max_length=500,default='', blank=True)
     discordUrl = models.CharField(max_length=500,default='', blank=True)
+    
     def __str__(self):
         return self.name
     
