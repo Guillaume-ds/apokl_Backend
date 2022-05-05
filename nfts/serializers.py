@@ -4,25 +4,18 @@ from nfts.models import NFT
 from creators.serializers import GetCreatorNameSerializer
 from rest_framework import serializers
 
-class NFTDetailSerializer(serializers.ModelSerializer):
-    creator =  GetCreatorNameSerializer()
-    class Meta:
-        model = NFT
-        fields = ["tokenId","title","is_published","creator","description","create_at","rarity"]
-        lookup_field = 'slug'
 
 class NFTReadSerializer(serializers.ModelSerializer):
+    creator =  GetCreatorNameSerializer()
     class Meta:
-        fields = '__all__'
+        fields = ["tokenId","title","is_published","creator","description","create_at","rarity","price","royalties"]
         model = NFT
         depth=1
-        lookup_field = 'slug'
 
 class NFTWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = NFT
-        fields = ['price','rarity','creator','title','description','slug']
-        lookup_field = 'slug'
+        fields = ['price','rarity','creator','title','description',"tokenId","royalties","tags"]
 
 
 		

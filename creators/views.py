@@ -1,5 +1,5 @@
 from .models import Creator, Collection
-from .serializers import CreateCreatorSerializer,GetCreatorsSerializer,GetCreatorDetailsSerializer,CreateCollectionSerializer,GetCollectionsSerializer,GetCollectionDetailsSerializer
+from .serializers import *
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
@@ -15,7 +15,10 @@ class CreatorViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, )
     def get_serializer_class(self):
         if self.request.method == 'POST':
+          try:
             return CreateCreatorSerializer
+          except:
+            return Response({"error":"Error occured, impossible to create this creator"},status=status.HTTP_400_BAD_REQUEST)
         else:
             return GetCreatorsSerializer 
 
@@ -32,18 +35,18 @@ class SearchCreator(ListAPIView):
     
     queryset= Creator.objects.all()
     try:
-      if request.data['tags'] != []:
+      if (request.data['tags'] != [] and type(request.data['tags'])==list):
         queryset = queryset.filter(tags__contains=request.data['tags'])
     except: None 
     
     try:
-      if request.data['name'] != '':
+      if (request.data['name'] != '' and type(request.data['name'])==str):
         queryset = queryset.filter(name=request.data['name'])      
     except: None
     
-    result_page = paginator.paginate_queryset(queryset, request)
     serializer = GetCreatorsSerializer(queryset, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    result_page = paginator.paginate_queryset(serializer.data, request)    
+    return paginator.get_paginated_response(result_page)
   
 #3 view -> Retrieve specific Creator with complete data, only if user = creator  
 class GetCreatorDetailsView(ListAPIView):
@@ -58,8 +61,22 @@ class GetCreatorDetailsView(ListAPIView):
       return Response(serializer.data, status = status.HTTP_200_OK)
     except:
       return Response({"error":"No creator"},status=status.HTTP_400_BAD_REQUEST)   
+    
+#4 view -> Retrieve specific Creator with complete data, only if user = creator  
+class GetCreatorContextView(ListAPIView):
+  permission_classes = (permissions.IsAuthenticated, )
+  serializer_class = GetCreatorsSerializer
+  
+  def post(self,request):
+    user = self.request.user
+    try:
+      creator = Creator.objects.get(user=user)
+      serializer = GetCreatorsSerializer(creator)
+      return Response(serializer.data, status = status.HTTP_200_OK)
+    except:
+      return Response({"error":"No creator"},status=status.HTTP_400_BAD_REQUEST)
 
-#4 view -> Update Creator data
+#5 view -> Update Creator data
 class UpdateCreatorView(APIView):    
   serializer_class = CreateCreatorSerializer 
   permission_classes = (permissions.IsAuthenticated, )  
@@ -127,9 +144,14 @@ class SearchCollection(ListAPIView):
         queryset = queryset.filter(description__icontains=keywords)
     except: None 
     
-    result_page = paginator.paginate_queryset(queryset, request)
+    try:   
+      if request.data['slug'] != '':
+        queryset = queryset.filter(slug=request.data['slug'])
+    except: None
+    
     serializer = GetCollectionsSerializer(queryset, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    result_page = paginator.paginate_queryset(serializer.data, request)    
+    return paginator.get_paginated_response(result_page)
 
 #3 view -> Retrieve specific Creator with complete data, only if user = creator 
 class GetCollectionDetailsView(ListAPIView):

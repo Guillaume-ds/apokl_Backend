@@ -34,3 +34,10 @@ class Post(models.Model):
     return self.title
   class Meta:
         ordering = ['-id']
+        
+class Comment(models.Model):
+  content = models.TextField()
+  creator = models.ForeignKey(Creator, on_delete=models.CASCADE, related_name='comment',blank=True, null=True)
+  post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment',blank=True, null=True)
+  class Meta:
+        ordering = ['-id']

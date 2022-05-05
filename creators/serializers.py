@@ -45,10 +45,10 @@ class GetCreatorDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Creator
         
-
+#4 view -> Retrieve specific Creator with partial data for context, only if user = creator 
 class GetCreatorNameSerializer(serializers.ModelSerializer):       
     class Meta:
-        fields = ['name','picture']
+        fields = ['name','picture','id']
         model = Creator
         depth=1
 
@@ -66,7 +66,7 @@ class GetCollectionsSerializer(serializers.ModelSerializer):
     postsCount = serializers.SerializerMethodField('countPosts')
     creator = GetCreatorNameSerializer()
     class Meta:
-        fields = ['id','name',
+        fields = ['id','name','slug',
                   'creator',
                   'description',
                   'tags','picture',
