@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from creators.models import Creator
 from rest_framework import serializers
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -7,16 +8,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ['url', 'username', 'email', 'id','date_joined']
 
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
-	def create(self, validated_data):
-		user = User.objects.create_user(
+  def create(self, validated_data):
+    user = User.objects.create_user(
 			email = validated_data['email'],
 			username = validated_data['username'],
 			password = validated_data['password'])
-		return user
-
-	class Meta:
-		model = User
-		fields = ['url', 'username', 'password', 'email', 'groups']
+    creator = Creator(user=user,name=user.username)
+    creator.save()
+    return user
+  
+  class Meta:
+    model = User
+    fields = ['url', 'username', 'password', 'email', 'groups']
   
 class ChangePasswordSerializer(serializers.Serializer):
     model = User

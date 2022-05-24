@@ -44,6 +44,11 @@ class SearchCreator(ListAPIView):
         queryset = queryset.filter(name=request.data['name'])      
     except: None
     
+    try:
+      if (request.data['id'] != [] and type(request.data['id'])==list):
+        queryset = queryset.filter(id__in=request.data['id'])      
+    except: None
+    
     serializer = GetCreatorsSerializer(queryset, many=True)
     result_page = paginator.paginate_queryset(serializer.data, request)    
     return paginator.get_paginated_response(result_page)
@@ -55,12 +60,11 @@ class GetCreatorDetailsView(ListAPIView):
   
   def post(self,request):
     user = self.request.user
-    try:
-      creator = Creator.objects.get(user=user)
-      serializer = GetCreatorDetailsSerializer(creator)
-      return Response(serializer.data, status = status.HTTP_200_OK)
-    except:
-      return Response({"error":"No creator"},status=status.HTTP_400_BAD_REQUEST)   
+    
+    creator = Creator.objects.get(user=user)
+    serializer = GetCreatorDetailsSerializer(creator)
+    return Response(serializer.data, status = status.HTTP_200_OK)
+       
     
 #4 view -> Retrieve specific Creator with complete data, only if user = creator  
 class GetCreatorContextView(ListAPIView):
@@ -104,9 +108,13 @@ class CollectionViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
           try:
+            creator_name = self.request.data['creator']
+            creator = Creator.objects.get(name = creator_name)
+            self.request.data['creator']=creator.id
+            print(self.request.data)
             return CreateCollectionSerializer
           except:
-            return Response({"error":"Error occured, impossible to create this collection"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error":"Wrong id for the creator"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return GetCollectionsSerializer 
 
@@ -135,14 +143,19 @@ class SearchCollection(ListAPIView):
     try:
       if(request.data['creator'] != '' and type(request.data['creator'])==str):
         creator = Creator.objects.get(name=request.data['creator'])
-        queryset = queryset.filter(creator=creator)
-    except: None  
+        queryset = queryset.filter(creator=creator)        
+    except: queryset = Collection.objects.none()  
     
     try:   
       if request.data['keywords'] != '':
         keywords = request.data['keywords']
         queryset = queryset.filter(description__icontains=keywords)
     except: None 
+    
+    try:
+      if (request.data['id'] != [] and type(request.data['id'])==list):
+        queryset = queryset.filter(id__in=request.data['id'])      
+    except: None
     
     try:   
       if request.data['slug'] != '':

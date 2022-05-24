@@ -4,7 +4,8 @@ from creators.models import Collection,Creator
 
 
 def room_directory_path(instance, filename):
-    return f'photos/room/{instance.creator.name}/{filename}'.format(filename=filename) 
+  name= instance.creator.name
+  return f'photos/room/{name}/{filename}'.format(filename=filename) 
 
 class Room(models.Model):
   title = models.CharField(max_length=255)
@@ -21,11 +22,12 @@ class Room(models.Model):
         ordering = ['-id']
 	
 def post_directory_path(instance, filename):
-    return f'photos/room/{instance.creator.name}/{filename}'.format(filename=filename) 
+  name=hash(instance.creator.name)
+  return f'photos/post/{name}/{filename}'.format(filename=filename) 
   
 class Post(models.Model):
   title = models.CharField(max_length=255)
-  content = models.TextField()
+  content = models.TextField(blank=True, null=True)
   creator = models.ForeignKey(Creator, on_delete=models.CASCADE, related_name='posts',blank=True, null=True)
   collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='posts',blank=True, null=True)
   picture = models.ImageField(upload_to=post_directory_path, default='', max_length=2000, blank=True)
@@ -36,7 +38,7 @@ class Post(models.Model):
         ordering = ['-id']
         
 class Comment(models.Model):
-  content = models.TextField()
+  content = models.TextField(blank=True, null=True)
   creator = models.ForeignKey(Creator, on_delete=models.CASCADE, related_name='comment',blank=True, null=True)
   post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment',blank=True, null=True)
   class Meta:

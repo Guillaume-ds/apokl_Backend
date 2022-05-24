@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>APOKL | Access Event</title>
+ </head>
+ <style type="text/css">
+
+   @media(min-width: 900px) {      
+      .collectionPictureContainer {         
+         margin:40px;
+      }
+      .apoklLogoContainer{
+         margin-top:50px;
+         padding-bottom:15px; 
+       }
+      #apoklLogo{
+         width:30%;
+      }
+    }
+
+
+   @media(min-width: 1100px) {
+      .mainText{
+         margin-top:2em;
+      }
+    }
+
+   @media(min-width: 900px) {      
+      .eventContentContainer {         
+         margin:40px;
+      }
+      .eventDescriptionContainer{
+         padding-left:20px;
+         padding-right:20px;
+      }
+    }
+
+ </style>
+ <body style="background-color:#f8f8ff;
+               padding-top:20px;
+               padding-bottom:50px;
+               ">
+   <div style="margin-top:5px;
+               margin-bottom:5px;
+               padding:5px;">
+      <img
+         src='https://apoklstorage1.blob.core.windows.net/media/photos/collection/369024577344373980/logo.png' 
+         alt="Apokl Logo" 
+         style=" margin-left: auto;
+               margin-right: auto;
+               display: block;
+               width:40%;" 
+      >
+   </div>
+   
+   <div style=" background-color:#fcfcff;
+         border-radius:5px;
+         text-align:center;
+         min-width:60%;
+         max-width:90%;
+         margin-left: auto;
+         margin-right: auto;
+         margin-top:100px;">
+      <h2 style="padding-top:20px;padding-bottom:20px;color:#0F0F4B;">Welcome {{user}} to {{roomName}}. <br><br>You've been invited by {{creatorName}}</h2>
+   </div>
+
+
+   <hr style="width:40%;
+         margin-left:30%;
+         color:#0F0F4B;
+         margin-top:100px;
+         background-color:#0F0F4B;
+         border:1px solid #0F0F4B;">
+   
+   <div style="padding-left:5%;
+         padding-right:5%;
+         z-index:3;   
+         color:#0F0F4B;
+         margin-top:50px; "> 
+      <h2 style="text-align:center;
+                margin-bottom:5vh;">More about this event:</h2>
+      <div style=" font-size:1.2em;
+            min-width:80%;
+            max-width:90%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top:1em;">
+         <p style="background-color:#fcfcff;
+                  color:#0F0F4B;
+                  padding-top:20px;
+                  padding-bottom:20px;">{{content}}</p>
+      </div> 
+      
+   </div>
+    
+ </body>
+</html>
