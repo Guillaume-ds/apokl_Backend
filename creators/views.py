@@ -1,5 +1,6 @@
 from .models import Creator, Collection
 from .serializers import *
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
@@ -127,38 +128,51 @@ class SearchCollection(ListAPIView):
       
   def post(self, request, format=None):
     paginator = PageNumberPagination()
-    paginator.page_size = 10
+    paginator.page_size = 50
     
     queryset= Collection.objects.all()
     try:
       if (request.data['nfts'] != [] and type(request.data['nfts'])==list):
-        queryset = queryset.filter(nfts__contains=request.data['nfts'])
+        queryset = queryset.filter(nfts_array__contains=request.data['nfts'])
+      else:None      
     except: None 
 
     try:  
-      if (request.data['tags'] != [] and type(request.data['tags'])==list):
+      if (request.data['tags'] != None and type(request.data['tags'])==list):
         queryset = queryset.filter(tags__contains=request.data['tags'])
-    except: None 
+      else:
+        None      
+    except: None  
 
     try:
-      if(request.data['creator'] != '' and type(request.data['creator'])==str):
-        creator = Creator.objects.get(name=request.data['creator'])
-        queryset = queryset.filter(creator=creator)        
-    except: queryset = Collection.objects.none()  
+      if(request.data['creator'] != None and type(request.data['creator'])==str):
+        try:
+          creator = Creator.objects.get(name=request.data['creator'])
+          if creator != None:
+            queryset = queryset.filter(creator=creator)  
+          else:
+            queryset = Collection.objects.none()      
+        except ObjectDoesNotExist:
+          queryset = Collection.objects.none() 
+      else:
+        None      
+    except: None  
     
     try:   
-      if request.data['keywords'] != '':
+      if request.data['keywords'] != None:
         keywords = request.data['keywords']
         queryset = queryset.filter(description__icontains=keywords)
-    except: None 
+      else:None      
+    except: None  
     
     try:
-      if (request.data['id'] != [] and type(request.data['id'])==list):
-        queryset = queryset.filter(id__in=request.data['id'])      
-    except: None
+      if (request.data['id'] != None and type(request.data['id'])==list):
+        queryset = queryset.filter(id__in=request.data['id'])     
+      else:None      
+    except: None 
     
     try:   
-      if request.data['slug'] != '':
+      if request.data['slug'] != None:
         queryset = queryset.filter(slug=request.data['slug'])
     except: None
     

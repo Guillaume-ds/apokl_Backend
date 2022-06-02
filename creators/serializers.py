@@ -91,3 +91,10 @@ class GetCollectionDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Collection
         lookup_field = 'creator'
+
+#4 view -> Retrieve specific Collection with partial data for context
+class GetCollectionPartialSerializer(serializers.ModelSerializer):       
+    class Meta:
+        fields = ['name','picture','slug']
+        model = Collection
+        depth=1

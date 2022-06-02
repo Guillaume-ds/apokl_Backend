@@ -1,6 +1,6 @@
 from rooms.models import Room, Post,Comment
 from rest_framework import serializers
-from creators.serializers import GetCreatorNameSerializer
+from creators.serializers import GetCreatorNameSerializer,GetCollectionPartialSerializer
 
 
 class GetCommentSerializer(serializers.ModelSerializer):
@@ -48,7 +48,19 @@ class RoomSerializer(serializers.ModelSerializer):
     return serializedCreator.data
   
 class GetRoomSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Room
-		fields = ["id","title","content","creator","collection"]
+    creatorInfo = serializers.SerializerMethodField('getCreator')
+    collectionInfo = serializers.SerializerMethodField('getCollection')
+    class Meta:
+        model = Room
+        fields = ["id","title","content","collectionInfo","creatorInfo","picture","picture2"]
+        
+    def getCreator(self,Room):
+        creator = Room.creator
+        serializedCreator = GetCreatorNameSerializer(creator)
+        return serializedCreator.data
+    
+    def getCollection(self,Room):
+        collection = Room.collection
+        serializedCollection = GetCollectionPartialSerializer(collection)
+        return serializedCollection.data
 

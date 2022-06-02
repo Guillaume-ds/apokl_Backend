@@ -3,7 +3,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rooms.serializers import PostSerializer,GetPostSerializer, RoomSerializer, CommentSerializer,GetCommentSerializer
+from rooms.serializers import PostSerializer,GetPostSerializer, RoomSerializer, CommentSerializer,GetCommentSerializer,GetRoomSerializer
 from rooms.models import Room,Post,Comment
 from creators.models import Collection,Creator
 from django.core.mail import EmailMessage, EmailMultiAlternatives
@@ -53,13 +53,13 @@ class RoomViewSet(viewsets.ModelViewSet):
 #2 view -> Retrieve Rooms for a specific collection / address
 class GetRoomView(ListAPIView):
   permission_classes = (permissions.IsAuthenticated,)
-  serializer_class = RoomSerializer
+  serializer_class = GetRoomSerializer
   def get(self,request):
     return Response({"Error":"Wrong request"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
   
   def post(self,request):
     paginator = PageNumberPagination()
-    paginator.page_size = 50
+    paginator.page_size = 150
     
     if request.data['address']:
       
@@ -74,7 +74,7 @@ class GetRoomView(ListAPIView):
           return Response({"Error":"Wrong collection data"}, status=status.HTTP_400_BAD_REQUEST)
         
       result_page = paginator.paginate_queryset(rooms, request)
-      postsSerialized = RoomSerializer(rooms,many=True)
+      postsSerialized = GetRoomSerializer(rooms,many=True)
       return paginator.get_paginated_response(postsSerialized.data)
     else:
       return Response({"Error":"Wrong address field"}, status=status.HTTP_400_BAD_REQUEST)
