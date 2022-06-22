@@ -1,5 +1,5 @@
 from django.db import models
-from creators.models import Creator
+from profiles.models import Profile
 from django.utils.timezone import now
 from django.contrib.postgres.fields import ArrayField
   
@@ -13,7 +13,7 @@ class NFT(models.Model):
     Polygon = 'Polygon'
     Other = 'Other'
 
-  creator = models.ForeignKey(Creator, related_name="nfts", on_delete=models.CASCADE)
+  creator = models.ForeignKey(Profile, related_name="nfts", on_delete=models.CASCADE, default=1)
   title = models.CharField(max_length=150)   
   description = models.TextField(blank=True)
   tags = ArrayField(models.CharField(max_length=200), blank=True, default=list)

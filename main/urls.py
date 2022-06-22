@@ -2,21 +2,22 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt import views as jwt_views
 from django.contrib import admin
-import rooms.views
+
 import accounts.views
 import nfts.views
-import creators.views
-import rooms.views
-
+import profiles.views
+import events.views
+import collectionsNft.views
+import postsAndComments.views
 
 router = routers.DefaultRouter()
 router.register(r'users', accounts.views.UserViewSet)
 router.register(r'nfts', nfts.views.NFTViewSet)
-router.register(r'creators', creators.views.CreatorViewSet)
-router.register(r'collections', creators.views.CollectionViewSet)
-router.register(r'posts', rooms.views.PostViewSet)
-router.register(r'rooms', rooms.views.RoomViewSet)
-router.register(r'comments', rooms.views.CommentViewSet)
+router.register(r'profiles', profiles.views.ProfileViewSet)
+router.register(r'collections', collectionsNft.views.CollectionViewSet)
+router.register(r'posts', postsAndComments.views.PostViewSet)
+router.register(r'events', events.views.EventViewSet)
+router.register(r'comments', postsAndComments.views.CommentViewSet)
 
 
 urlpatterns = [
@@ -29,7 +30,9 @@ urlpatterns = [
     path('api/register/', accounts.views.RegisterUserAPIView.as_view(), name='register'),
     path('api/change-password/', accounts.views.ChangePasswordView.as_view(), name='change-password'),
     path('api/reset-password/', accounts.views.ResetPasswordView.as_view(), name='change-password'),
-    path('api/creators/', include('creators.urls', namespace='creators')),
-    path('api/rooms/', include('rooms.urls', namespace='rooms')),
+    path('api/profiles/', include('profiles.urls', namespace='profiles')),
+    path('api/postsAndComments/', include('postsAndComments.urls', namespace='postsAndComments')),
+    path('api/collections/', include('collectionsNft.urls', namespace='collections')),
+    path('api/events/', include('events.urls', namespace='events')),
     path('api/nfts/',include('nfts.urls', namespace='nfts')),
 ]

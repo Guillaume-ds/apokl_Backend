@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
-from creators.models import Creator
+from profiles.models import Profile
 from rest_framework import serializers
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = User
-		fields = ['url', 'username', 'email', 'id','date_joined']
+		fields = ['url', 'username', 'email', 'id','date_joined',"is_staff"]
 
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
   def create(self, validated_data):
@@ -13,7 +13,7 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
 			email = validated_data['email'],
 			username = validated_data['username'],
 			password = validated_data['password'])
-    creator = Creator(user=user,name=user.username)
+    creator = Profile(user=user,name=user.username)
     creator.save()
     return user
   

@@ -4,7 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView
 from nfts.serializers import NFTReadSerializer,NFTWriteSerializer
 from nfts.models import NFT
-from creators.models import Creator
+from profiles.models import Profile
 
 
 #1 view -> Create NFT 
@@ -14,8 +14,10 @@ class NFTViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
           try:
-            creator_name = self.request.data['creator']
-            creator = Creator.objects.get(name = creator_name)
+            profile_name = self.request.data['creator']
+            print(profile_name)
+            creator = Profile.objects.get(name = profile_name)
+            print(creator)
             self.request.data['creator']=creator.id
             return NFTWriteSerializer
           except:
@@ -35,10 +37,12 @@ class SearchNFT(ListAPIView):
     paginator.page_size = 10
     
     queryset= NFT.objects.all()
+    
     try:  
       if (request.data['priceMin'] != "" and type(request.data['priceMin'])==int):
         queryset = queryset.filter(price__gte=request.data['priceMin'])
     except: None 
+    
     try:  
       if (request.data['priceMax'] != "" and type(request.data['priceMax'])==int):
         queryset = queryset.filter(price__lte=request.data['priceMax'])
@@ -50,18 +54,22 @@ class SearchNFT(ListAPIView):
     except: None 
 
     try:
-      if(request.data['creator'] != '' and type(request.data['creator'])==str):
-        creator = Creator.objects.get(name=request.data['creator'])
+      if(request.data['creator'] != None):
+        creator_name = self.request.data['creator']
+        creator = Profile.objects.get(name = creator_name)
         queryset = queryset.filter(creator=creator)
-    except: None  
+      else:
+        None
+    except: queryset= NFT.objects.none() 
     
+  
     try:
       if(request.data['id'] != [] ):
         queryset = queryset.filter(tokenId__in=request.data['id'])
     except: None 
     
     try:   
-      if request.data['keywords'] != '':
+      if request.data['keywords'] != None:
         keywords = request.data['keywords']
         queryset = queryset.filter(description__icontains=keywords)
     except: None 

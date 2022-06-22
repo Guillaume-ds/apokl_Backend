@@ -1,16 +1,21 @@
 from django.contrib.auth.models import Group
-from creators.models import Creator
+from profiles.models import Profile
 from nfts.models import NFT
-from creators.serializers import GetCreatorNameSerializer
+from profiles.serializers import GetProfileNameSerializer
 from rest_framework import serializers
 
 
 class NFTReadSerializer(serializers.ModelSerializer):
-    creator =  GetCreatorNameSerializer()
+    creatorInfo = serializers.SerializerMethodField('getCreator')
     class Meta:
-        fields = ["tokenId","title","is_published","creator","description","create_at","rarity","price","royalties"]
+        fields = ["tokenId","title","is_published","creatorInfo","description","create_at","rarity","price","royalties"]
         model = NFT
         depth=1
+        
+    def getCreator(self,Comment):
+        creator = Comment.creator
+        serializedCreator = GetProfileNameSerializer(creator)
+        return serializedCreator.data
 
 class NFTWriteSerializer(serializers.ModelSerializer):
     class Meta:

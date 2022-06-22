@@ -48,9 +48,12 @@ INSTALLED_APPS = [
     'storages',
         
     'accounts',
-    'creators',
-    'rooms',
+    'collectionsNft',
+    'events',
     'nfts',
+    'postsAndComments',
+    'profiles', 
+    
 ]
 
 MIDDLEWARE = [
